@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>面向对象</title>
+	<script>
+		/**
+		* 定义一个数组
+		**/
+
+		var arr = [1,2,3,4,5];
+
+		/**
+		* 输出 object
+		* 说明数组就是个对象
+		**/ 
+		console.log(typeof(arr))  // object
+
+		/**
+		* 输出5
+		* 对象的属性 length
+		**/
+		console.log(arr.length);
+
+		/**
+		* 对象的方法 push
+		* 弹出 1,2,3,4,5,6
+		**/
+		arr.push(6);
+		console.log(arr)
+		/**
+		* JS中的this以及全局对象window
+		**/
+
+		/**
+		* 定义一个全局函数
+		**/
+		function show(){
+			console.log(this); // window 
+		}
+		// 调用 show();
+		show(); 
+		// 说明全局函数属于window， show()等于为window添加一个方法，全局的函数和变量都是属于window的。其定义等价于为window定义一个show方法
+		//   window.show = function(){console.log(this)}  调用 show()   window.show();
+		/**
+		*	 二、 JS中自定义对象，逐步分析JS中的创建对象
+		*      1. 通过Object创建简单对象：
+		*         这种方式有一个非常大的弊端，就是如果我有多个人怎么办，每次都要新建一个对象，然后添加属性、方法，这种方式是一次性的，会产生大量重复代码，
+		*         这是不可取的
+		**/
+		/**
+		* 创建一个新对象
+		* new Object()创建出来的对象几乎是空白的，需要自己添加属性，方法
+		**/
+		  var  person = new Object();
+		// 为 person 对象添加属性
+		person.name = "jiangzhou";
+		person.age = 22;
+		// 为 person对象添加方法
+		person.showName = function(){
+			console.log("姓名：" + this.name)
+		}
+		person.showAge = function(){
+			console.log("年龄：" + this.age);
+		}
+		// 调用对象的方法
+		person.showName();
+		person.showAge();
+		/**
+		* 用工厂方式构造对象： 工厂，简单来说就是投入原料、加工、出厂。
+		* 通过构造函数来生成对象，将重复的代码提取到一个函数里面，避免像第一种方式写大量重复的代码。这样我们在需要这个对象的时候，就可以简单地创建出来了。
+		**/
+		// 构造函数：工厂
+		function createPerson(name,age){
+			var person = new Object();
+			// 原料
+			person.name = name;
+			person.age = age;
+			// 加工
+			person.showName = function(){
+				console.log("姓名1：" +　this.name);
+			}
+			person.showAge = function(){
+				console.log("年龄1：" + this.age);
+			}
+			// 出厂
+			return person;
+		}
+		// 创建两个对象
+		var p1 = createPerson("jiangzhou1",22);
+		var p2 = createPerson("tom",20);
+
+		// 调用对象方法
+		p1.showName();
+		p1.showAge();
+
+		p2.showName();
+		p2.showAge()
+		/**
+		* 但是，这种方式有两个缺点：
+		* ① 一般我们创建对象是通过new来创建，比如new Date(),这里使用的是方法创建。使用new来创建可以简化一些代码，也带来一些新的特性
+		* ②  每个对象都有一套自己的方法，浪费资源（虽然对于现在的计算机来说不算什么，单我们尽量将设计做到最好就行了）。
+		* 这里为什么说每个对象都有自己的一套方法呢，是因为创建function()的时候其本质是通过new Function()来创建的，会诞生一个新的函数对象，
+		* 所以每个对象的方法是不一样的，这样就存在资源浪费的问题了。  
+		**/
+
+		function createNewPerson(name,age,sex){
+			var person = new Object();
+			
+			person.name = name;
+			person.age = age;
+			person.sex = sex;
+
+			person.showName = function(){
+				console.log("姓名2：" + this.name)
+			}
+			person.showAge = function(){
+				console.log("年龄2：" + this.age);
+			}
+			/**
+			* person.showSex = function(){} 等价于person.showSex = new Function('');
+			* 也就是说我们在创建这个函数的时候就是新建了一个对象
+			**/
+
+			person.showSex = new Function('console.log("性别：" + this.sex)');
+
+			return person
+		}
+
+		// 创建两个对象
+		var p3 = createNewPerson("jiangzhou", 22, "男");
+		var p4 = createNewPerson("Lyli", 20, "女");
+
+		console.log(p3.showName == p4.showName);  // false
+
+		/**
+		* 使用new 来创建JS对象
+		**/
+		function Person(name,age){
+			/**
+			* 可以假想成系统会创建一个对象
+			* var this = new Object();
+			**/
+
+			console.log(this);  // 弹出Object
+
+			this.name = name;
+			this.age = age;
+
+			this.showName = function(){
+				console.log("姓名3：" + this.name);
+			} 
+			this.showAge = function(){
+				console.log("年龄3：" + this.age)
+			}
+			/**
+			* 假想返回了对象
+			* return this;
+			**/
+		}
+
+		// 创建两个对象
+		var p5 = new Person("jiangzhou",22); // 可以看到在外面new了在function 里面就不用new了；在function里面new了，在外面就不用new了；
+		var p6 = new Person("Lyli",20);
+
+		console.log(p5.showName == p6.showName); // false
+		/**
+		* 在function原型（prototype）上进行扩展 ———— 最终版
+		* 原型添加的方法不会有多个副本，不会浪费资源，所有的对象只有一套方法（看第196行）。至于为什么是用的一套方法呢，看第198行代码：因为所有的方法都等于原型上的方法。
+		**/
+		
+		/**
+		* person 构造函数：在JS中，构造函数其实就可以看成类，对某个对象的抽象定义。
+		* @param {Object} name;
+		* @param {Object} age;
+		**/
+		function newPerson(name,age){
+			// 属性：每个对象的属性各不相同
+			this.name = name;
+			this.age = age;
+		}
+
+		// 在原型上添加方法，这样创建的所有对象都是用的同一套方法
+		newPerson.prototype.Name = function(){
+			console.log("姓名4：" + this.name);
+		}
+		newPerson.prototype.showAge = function(){
+			console.log("年龄4：" + this.age)
+		}
+		// 创建两个对象
+		var p7 = new newPerson("jiangzhou",22);
+		var p8 = new newPerson("Lyli",20);
+
+		console.log(p7.Name == p8.Name); // true
+		// 这里为什么两个对象的方法是相等的呢，可以看成如下
+		console.log(p7.Name == newPerson.prototype.Name);  // true
+
+		/****
+		** 通过proptotype我们还可以很方便的扩展系统对象，按照自己的需求来扩展，而且又能适用于所有地方，又不会浪费资源。
+		****/
+		/**
+		*	对数组原型扩展一个求和的方法；
+		* 注意不能只加在某个数组对象上，那样的话只能在那个对象上适用。
+		**/
+		Array.prototype.sum = function(){
+			var sum = 0;
+			for (var i=0; i<this.length;i++){
+				sum += this[i];
+			}
+			return sum;
+		}
+
+		// 通过new Array() 和 [] 创建数组完全是一样的效果。
+		var arr1 = new Array(1,2,3,4,5,6);
+		var arr2 = [11,22,33,44,55];
+		
+		console.log(arr1.sum());
+		console.log(arr2.sum());
+
+		console.log(arr1.sum == arr2.sum); // true
+		console.log(arr2.sum == Array.prototype.sum); // true
+	</script>
+</head>
+<body>
+    
+</body>
+</html>
