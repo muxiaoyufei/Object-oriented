@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<style>
+			body {
+				padding: 0;
+				margin: 0;
+			}
+			div {
+				position: absolute;
+			}
+		</style>
+		<title>拖拽</title>
+		<script type="text/javascript" src="./drag.js" ></script>
+		<script type="text/javascript" src="./dragLimit.js" ></script>
+		<script>
+			window.onload = function(){
+				var drag1 = new Drag("box1");
+				
+				var drag1 = new DragLimit("box2");
+			};
+		</script>
+	</head>
+
+<body>
+	<div id="box1" style="background: red;width: 200px;height: 200px;"></div>
+	
+	<div id="box2" style="background: blue;width: 100px;height: 300px;"></div>
+</body>
+</html>

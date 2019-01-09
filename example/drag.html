@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>拖拽</title>
+  <script src="./drag.js"></script>
+  <style>
+    div {
+      position: absolute;
+    }
+  </style>
+  <script>
+    window.onload = function(){
+      var drag1 = new Drag("box1");
+      var drag2 = new Drag("box2");
+    };
+  </script>
+</head>
+<body>
+  <div id="box1" style="background: red;width: 200px;height: 200px;"></div>
+  <div id="box2" style="background: blue;width: 100px;height: 300px;"></div>
+</body>
+</html>

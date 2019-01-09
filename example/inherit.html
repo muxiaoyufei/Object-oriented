@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>面向对象的继承</title>
+	<script>
+		/**
+		* Person 父类 人
+		* @param {Object} name 姓名
+		* @param {Object} sex 性别
+		**/
+		function Person(name,sex){
+			this.name = name;
+			this.sex = sex;
+		}
+		Person.prototype.showName = function(){
+			console.log("姓名：" +　this.name);
+		}
+		Person.prototype.showSex = function(){
+			console.log("性别：" + this.sex);
+		}
+
+		/*--------------------------------------------------*/
+		  /**
+			*  Student  学生 继承 人
+			*　@param {Object} name
+			*  @param {Object} sex
+			*  @param {Object} major 学生特有属性：专业
+			**/
+			function Student(name,sex,major){
+				// 调用父类的构造函数
+				Person.call(this,name,sex);
+				// 添加自己的属性
+				this.major = major
+			}
+			// 继承父类原型中的方法
+			Student.prototype = Person.prototype;
+			// 添加自己特有的方法
+			Student.prototype.showMajor = function(){
+				console.log("专业：" + this.major);
+			}
+
+			var student = new Student("bojiangzhou","男","信息管理");
+			student.showName();
+			student.showSex();
+			student.showMajor();
+
+			console.log(Person.prototype.showMajor);
+
+		/**
+			先举个简单的例子来说一下JS中的继承，Student <extends> Person；
+			在js中，通过call来调用父类的构造方法继承父类的属性(第33行)，通过原型来继承父类的方法(第39行)。
+			注意：先调用父类构造函数，再添加自己的属性；先继承父类的方法，再添加自己的方法。
+			这里解释下为什么调用Person.call(this, name, sex)就相当于是在调用父类的构造方法：先问一下这个call中的this是谁？这里指向对象student吧。
+			所以，在子构造函数中调用Person.call()时，那么构造函数Person里的两行代码this.name=name, this.sex=sex中this就是代表student了，所以
+			这两行代码相当于是在为student添加name和sex属性。
+			但是，上面的通过原型来继承父类的方法，即Student.prototype = Person.prototype，是有问题的，这种方式将影响父类(继承是不能影响父类的)，
+			此时Person的原型中有了个showMajor方法(第50行)，为什么呢？先思考下，下面解释。
+		**/	
+	  /**
+			为了解释为什么通过Student.prototype = Person.prototype来继承父类的方法会影响父类，下面举一个数组的例子，一看就知道怎么回事了。
+			为什么arr1和arr2弹出来的一样呢？第74、75行显示arr1和arr2是一个对象。对象！应该很清楚了吧，arr1和arr2都是指向这个数组对象的一个引用，所以改变arr2时，arr1也变了。
+		**/
+		    var arr1 = [1,2,3,4,5];
+        var arr2 = arr1;
+        
+        arr2.push(6);
+        
+        console.log(arr1); //弹出1,2,3,4,5,6
+        console.log(arr2); //弹出1,2,3,4,5,6
+        
+        console.log(typeof arr1); //object
+        console.log(typeof arr2); //object
+		/*---- 其实我们主要是想获得arr1数组的一个副本，怎么做才能不改变arr1呢，看下面： ----*/
+			var arr3 = [1,2,3,4,5];
+			var arr4 = [];
+			
+			//复制arr1的数据即可
+			for(var i=0;i<arr3.length;i++){
+					arr3[i]=arr4[i];
+			}
+			
+			arr4.push(6);
+			
+			console.log(arr3); //弹出1,2,3,4,5
+			console.log(arr4); //弹出1,2,3,4,5,6
+		/*---- 同样的，我们也可以通过这种方式为继承的子类添加父类原型中的方法，而又不影响父类(38-41行)： ----*/
+		/**
+		* Person1 父类 人
+		* @param {Object} name 姓名
+		* @param {Object} sex 性别
+ 		**/
+		function Person1(name,sex){
+			this.name = name;
+			this.sex = sex;
+		}
+		Person1.prototype.showName = function(){
+			console.log("姓名1：" + this.name);
+		}
+		Person1.prototype.showSex = function(){
+			console.log("性别1：" +　this.sex);
+		}
+		/*------------------------------------------------*/
+		/**
+		* Student1 学生 继承 人
+		* @param {Object} name
+		* @param {Object} sex
+		* @param {Object} major 学生特有属性：专业
+		**/
+		function Student1(name, sex, major){
+			// 调用父类的构造函数
+			Person1.call(this, name, sex);
+
+			// 添加自己的属性
+			this.major = major;
+		}
+		// 继承父类原型中的方法
+		for(var p in Person1.prototype){
+			Student1.prototype[p] = Person1.prototype[p];
+		}
+
+		// 添加自己特有的方法
+		Student1.prototype.showMajor = function(){
+			console.log("专业：" + this.major);
+		}
+
+		var student1 = new Student1("bojiangzhou","男","信息管理");
+		student1.showName();
+		student1.showSex();
+		student1.showMajor();
+
+		console.log(Person1.prototype.showMajor)    // undefined
+		/**Person1中没有showMajor方法了。**/
+	</script>
+</head>
+<body>
+	
+</body>
+</html>
