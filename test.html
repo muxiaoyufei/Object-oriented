@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>面向对象</title>
+		<script type="text/javascript">
+			function Person () {
+					
+			}
+			Person.prototype.name = "Jack";
+			// var p1 = new Person();
+			// p1.sex = "man";
+			// //sex属性是直接在p1属性中添加，所以是true
+			// console.log("sex属性是对象本身的：" + p1.hasOwnProperty("sex"));
+			// // name属性是在原型中添加的，所以是false
+			// console.log("name属性是对象本身的：" + p1.hasOwnProperty("name"));
+			// //  age 属性不存在，所以也是false
+			// console.log("age属性是存在于对象本身：" + p1.hasOwnProperty("age"));
+
+			// Person.prototype.name = "Jack";
+			// var p1 = new Person();
+			// p1.sex = "man";
+			// console.log("sex" in p1);     // 对象本身添加的，所以true
+			// console.log("name" in p1);    //原型中存在，所以true
+			// console.log("age" in p1);     //对象和原型中都不存在，所以false
+			function Person () {
+			}
+			Person.prototype.name = "Jack";
+			var p1 = new Person();
+			p1.sex = "man";
+			
+			//定义一个函数去判断原型所在的位置
+			function propertyLocation(obj, prop){
+				if(!(prop in obj)){
+					console.log(prop + "属性不存在");
+				}else if(obj.hasOwnProperty(prop)){
+					console.log(prop + "属性存在于对象中");
+				}else {
+					console.log(prop + "对象存在于原型中");
+				}
+			}
+			propertyLocation(p1, "age");
+			propertyLocation(p1, "name");
+			propertyLocation(p1, "sex");
+
+
+			// //定义一个构造函数。
+			// function Father () {
+			// 	// 添加name属性.  默认直接赋值了。当然也可以通过构造函数传递过来
+			// 	this.name = "马云";
+			// }
+			// //给Father的原型添加giveMoney方法
+			// Father.prototype.giveMoney = function () {
+			// 	console.log("我是Father原型中定义的方法");
+			// }
+			// //再定义一个构造函数。
+			// function Son () {
+			// 	//添加age属性
+			// 	this.age = 18;
+			// }
+			// //关键地方：把Son构造方法的原型替换成Father的对象。  因为原型是对象，任何对象都可以作为原型
+			// Son.prototype = new Father();
+			// //给Son的原型添加getMoney方法
+			// Son.prototype.getMoney = function () {
+			// 	console.log("我是Son的原型中定义的方法");
+			// }
+			// //创建Son类型的对象
+			// var son1 = new Son();
+
+			// //发现不仅可以访问Son中定义属性和Son原型中定义的方法，也可以访问Father中定义的属性和Father原型中的方法。
+			// //这样就通过原型完成了类型之间的继承。 
+			// // Son继承了Father中的属性和方法，当然还有Father原型中的属性和方法。
+			// son1.giveMoney();
+			// son1.getMoney();
+			// console.log("Father定义的属性：" + son1.name);
+			// console.log("Son中定义的属性：" + son1.age);
+				
+			{/*
+				function Father () {
+					this.girls = ["Andy", "Lucy"];
+				}
+				function Son () {
+						
+				}
+				// 子类的原型对象中就有一个属性 girls ，是个数组
+				Son.prototype = new Father();   
+				var son1 = new Son();
+				var son2 = new Son();
+				//给son1的girls属性的数组添加一个元素
+				son1.girls.push("Lily");
+				//这时，发现son2中的girls属性的数组内容也发生了改变
+				console.log(son2.girls);  // "Andy", "Lucy", "Lily"
+			*/}
+
+				{/** 借用继承
+					function Father (name,age) {
+						this.name = name;
+						this.age = age;
+					}
+					//如果这样直接调用，那么father中的this指的是 window。 因为其实这样调用的： window.father("李四", 20)
+					// name 和age 属性就添加到了window属性上
+					Father("Jack", 20);
+					console.log("name:" + window.name + "\nage:" + window.age);  //可以正确的输出
+
+					//使用call方法调用，则可以改变this的指向
+					function Son (name, age, sex) {
+						this.sex = sex;
+						//调用Father方法(看成普通方法)，第一个参数传入一个对象this，则this(Son类型的对象)就成为了Father中的this
+						Father.call(this, name, age);
+					}
+					var son = new Son("Mark", 30, "man");
+					console.log("name:" + son.name + "\nage:" + son.age + "\nsex:" + son.sex);
+					console.log(son instanceof Father); //false}
+				**/}
+
+				/** 组合继承 **/
+				//定义父类型的构造函数
+				function Father (name,age) {
+					// 属性放在构造函数内部
+					this.name = name;
+					this.age = age;
+					// 方法定义在原型中
+					if((typeof Father.prototype.eat) != "function"){
+						Father.prototype.eat = function () {
+							console.log(this.name + " Eat food");
+						}
+					}  
+				}
+				// 定义子类类型的构造函数
+				function Son(name, age, sex){
+					//借调父类型的构造函数，相当于把父类型中的属性添加到了未来的子类型的对象中
+					Father.call(this, name, age);
+					this.sex = sex;
+				}
+				//修改子类型的原型为父类型的对象。这样就可以继承父类型中的方法了。
+				Son.prototype = new Father( );
+				var son1 = new Son("Jack", 30, "man");
+				console.log(son1.name);
+				console.log(son1.sex);
+				console.log(son1.age);
+				son1.eat();
+
+				function outer () {
+					var num = 5;
+					//定义一个内部函数
+					function inner () {
+						//内部函数的返回值是外部函数的一个局部变量
+						console.log("num",num)
+						return num;
+					}
+					//把局部变量的值++
+					num++;
+					// 返回内部函数
+					console.log("11111111",inner)
+					return inner;
+				}
+				var num = outer()();  // 6
+				console.log(num);
+
+				{/** 使用函数自执行和闭包封装对象 **/}
+				var person = (function () {
+					//声明一个对象，增删改查均是针对这个对象
+					var personInfo = {
+						name : "李四",
+						age : 20
+					};
+					//返回一个对象，这个对象中封装了一些对personInfo操作的方法
+					return {
+						//根据给定的属性获取这个属性的值
+						getInfo : function (property) {
+							return personInfo[property];
+						},
+						//修改一个属性值
+						modifyInfo : function (property, newValue) {
+							personInfo[property] = newValue;		
+						},
+						//添加新的属性
+						addInfo : function (property, value) {
+							personInfo[property] = value;		
+						},
+						//删除指定的属性
+						delInfo : function (property) {
+							delete personInfo[property];
+						}
+					}
+				})();
+				console.log(person.getInfo("name"));
+				person.addInfo("sex", "男");
+				console.log(person.getInfo("sex"));
+
+				//  1、默认绑定
+				function  foo() {
+			    console.log("默认绑定",this);//this指 obj   谁调用指向谁
+			  }
+
+				//2、隐式绑定
+			  var name = "Mark";
+				var obj = {
+					name : "Jack",
+					foo : foo,
+					foo1 : function () {
+						console.log("隐式绑定this指向",this)
+						console.log("隐式绑定",this.name);//this指 window
+					}
+				}
+			  obj.foo();//{name: "Jack", foo: function, foo1: function}
+			  var foo1 = obj.foo1;
+			  foo1();//Mark
+				
+				// window.onload=function(){
+				// 	foo()
+				// }
+		</script>
+
+		
+	</head>
+	<body>
+		<input type="button" value="按钮1"    >
+		<input type="button" value="按钮2"    >
+		<input type="button" value="按钮3"    >
+		<!-- <script type="text/javascript">
+			var btns = document.getElementsByTagName("input");
+			for (var i = 0; i < 3; i++) {
+				//把i的值绑定到按钮的一个属性上，那么以后i的值就和index的值没有关系了。
+				btns[i].index = i;
+				btns[i].onclick = function () {
+					alert("我是第" + (this.index + 1) + "个按钮");
+				};
+			}
+		</script> -->
+		<script type="text/javascript">
+			var btns = document.getElementsByTagName("input");
+			for (var i = 0; i < 3; i++) {   
+				//因为匿名函数已经执行了，所以会把 i 的值传入到num中，注意是i的值，所以num
+				(function (num) {
+					btns[i].onclick = function () {
+						alert("我是第" + (num + 1) + "个按钮");
+					}
+				})(i);
+			}
+		</script>
+	</body>
+</html>
