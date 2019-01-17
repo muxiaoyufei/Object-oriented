@@ -201,14 +201,63 @@
 					name : "Jack",
 					foo : foo,
 					foo1 : function () {
-						console.log("隐式绑定this指向",this)
-						console.log("隐式绑定",this.name);//this指 window
+						// console.log("隐式绑定this指向",this)
+						console.log("隐式绑定",this.name);    //this指 window
 					}
 				}
-			  obj.foo();//{name: "Jack", foo: function, foo1: function}
+			  obj.foo();            //{name: "Jack", foo: function, foo1: function}
 			  var foo1 = obj.foo1;
-			  foo1();//Mark
+			  foo1();              //Mark
+
+				//3、new 绑定
+				function  foo2() {
+					this.name = "Lucy";
+					console.log(this);      //this 指向foo2    foo2 {name: "Lucy"}
+				}
+				var obj2 = new foo2();
+				console.log(obj2);       //this 指向foo2        foo2 {name: "Lucy"}
+				var foo3 = obj.foo1;
+				foo3();                  //Mark
 				
+				var obj3 = new foo;       //foo {}
+				console.log(obj3);        //foo {}
+
+
+				//4、显示绑定
+				//call  apply
+				function  foo4(a,b) {
+				 	console.log(this.name,a,b);
+				}
+				foo4.call({name:"Jack"},10,20)        //Jack 10 20
+				foo4.apply({name:"Mark"},[20,10])    //Mark 20 10
+				
+				//apply求max
+				var arr = [23,65,2,45,3,57,4567];
+				console.log(Math.max.apply(Math,arr)); //max = 4567
+				
+				//定义Math 求和的方法
+				Math.sun = function () {
+					return Array.prototype.reduce.call(arguments,function (sun,ele) {
+						return sun + ele;
+					},0)
+				}
+				console.log(Math.sun.apply(Math,arr));//sum = 4762
+				
+				//bind
+				var obj4 = {
+					name : "Jack"
+				}
+				function  foo5() {
+					console.log(this.name);
+				}
+				var f = foo5.bind(obj4);//这种绑定方式优先级最高
+				f();//Jack
+				var obj5 = {
+					name : "Mark",
+					foo6 : f
+				}
+				obj5.foo6()//Jack
+
 				// window.onload=function(){
 				// 	foo()
 				// }
